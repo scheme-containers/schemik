@@ -10,10 +10,10 @@ ADD https://sourceforge.net/projects/schemik/files/schemik/1.2.40.0/schemik-1.2.
 RUN sha256sum schemik.tar.gz && sha256sum -c checksum
 RUN mkdir schemik && tar -C schemik --strip-components 1 -xf schemik.tar.gz
 WORKDIR /build/schemik
-RUN { echo -n "Schemik " && grep "version " ChangeLog | head -n 1 \
-        | grep -ohE "[0-9][0-9.]+"; } | tee /usr/local/share/scheme-version
 RUN scons
 RUN scons install prefix=/usr/local
+COPY write-scheme-version write-scheme-version
+RUN ./write-scheme-version | tee /usr/local/share/scheme-version
 
 FROM debian:buster-slim
 RUN apt-get update && apt-get -y --no-install-recommends install \
